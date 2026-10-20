@@ -1,0 +1,11 @@
+{
+  "account_alias": "my-company prod",
+  "profile": "",
+  "region": "us-east-1",
+  "tax_rate": 0.0,
+  "settle_tells": {},
+  "s3_buckets_to_watch": [],
+  "cur_s3_path": "",
+  "price_ebs_gp3_gb_month": 0.08,
+  "price_logs_ingest_gb": 0.50
+}

@@ -1,0 +1,54 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "MandatoryCostExplorerRead",
+      "Effect": "Allow",
+      "Action": [
+        "ce:GetCostAndUsage",
+        "ce:GetCostForecast"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "OptionalAnomalyDetectionRead",
+      "Effect": "Allow",
+      "Action": [
+        "ce:GetAnomalies",
+        "ce:GetAnomalyMonitors"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "OptionalInventoryRead",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeAddresses",
+        "ec2:DescribeVolumes",
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "cloudwatch:GetMetricStatistics",
+        "cloudwatch:GetMetricData",
+        "logs:DescribeLogGroups",
+        "ecr:DescribeRepositories",
+        "ecr:GetLifecyclePolicy",
+        "ecs:ListClusters",
+        "ecs:DescribeClusters"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "OptionalCurParquetList",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::YOUR-CUR-BUCKET",
+      "Condition": { "StringLike": { "s3:prefix": "YOUR/CUR/PREFIX/*" } }
+    },
+    {
+      "Sid": "OptionalCurParquetRead",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::YOUR-CUR-BUCKET/YOUR/CUR/PREFIX/*"
+    }
+  ]
+}

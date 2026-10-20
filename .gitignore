@@ -1,0 +1,6 @@
+config.json
+notes.md
+cur_cache/
+*.log
+__pycache__/
+.venv/
