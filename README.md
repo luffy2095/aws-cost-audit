@@ -1,23 +1,62 @@
 # AWS cost audit
 
-A Claude Code skill that reads an AWS bill the way a careful person would: settled days only,
-same dates across months, tax applied last, per-service lines instead of totals, and the raw
-Cost and Usage Report when the question is "which resource". Read-only. Nothing in here changes
-an AWS resource.
+A Claude Code skill that answers "why did my AWS bill move?" the way a careful cloud-cost analyst would. It reads your bill read-only and never changes anything in your account.
+
+It is for engineers and founders who pay an AWS bill and want a straight answer without learning Cost Explorer's traps.
+
+## What it answers
+
+- Is this month's bill normal? What will the month cost, with tax?
+- What changed, on which day, in which service, and which usage type moved?
+- Is anything spiking or stepping up in the last 30 days?
+- Which bucket, load balancer, database or instance costs the most? This needs the AWS Cost and Usage Report, an hourly billing export to S3.
+- Am I paying for idle things: public IP addresses, unattached disks, load balancers with no traffic, log groups that never expire?
+- Is S3 Intelligent-Tiering actually moving data to cheaper tiers?
+
+Most cost readings go wrong in the same few ways. A day read before it has finished posting looks cheap, the start of a month gets compared with the end of the last one, and tax gets mixed into usage. The skill applies the rules in sections 3 and 4 below so its numbers avoid those traps.
 
 ## Install
+
+You need [Claude Code](https://claude.com/claude-code), the AWS CLI v2 with a configured profile, and Python 3.9 or later.
 
 ```bash
 git clone https://github.com/luffy2095/aws-cost-audit ~/.claude/skills/aws-cost-audit
 ```
 
-Then ask Claude Code anything about your AWS bill. On the first run the skill asks five setup
-questions (profile, region, tax rate, CUR export, buckets to watch) and shows which IAM
-permissions are mandatory and which are optional. Answers go to `config.json`, which stays on
-your machine.
+To update later:
 
-Requirements: AWS CLI v2 with a configured profile, Python 3.9+. The CUR query needs
-`pip install -r scripts/requirements.txt` (DuckDB).
+```bash
+git -C ~/.claude/skills/aws-cost-audit pull
+```
+
+The resource-level questions also need DuckDB: `pip install -r ~/.claude/skills/aws-cost-audit/scripts/requirements.txt`.
+
+## How to use
+
+### First run
+
+Ask Claude Code anything about your AWS bill, for example `why did AWS cost go up this week?`
+
+1. **Setup questions.** The skill asks five questions in one message: AWS profile and region, your tax rate, whether you have a Cost and Usage Report export, which S3 buckets to watch, and an optional fixed-cost service it can use to tell whether a day has finished posting.
+2. **Permissions.** In the same message it shows which permissions are mandatory and which are optional, as in the table below. You attach the policy yourself. The skill never creates or changes IAM.
+3. **Your config.** Answers go to `config.json` in the skill folder. Account-specific notes go to `notes.md`. Both stay on your machine and are never committed.
+
+### After that
+
+| You say | It does |
+|---|---|
+| `check AWS costs` | Runs every check and reports what is normal, what moved and what is idle. |
+| `why did cost go up on Tuesday?` | Finds the service and usage type that moved, then the resource if the report export exists. |
+| `what will this month cost?` | Projects the month from settled days only, with tax added last. |
+| `which bucket costs the most?` | Ranks resources from the Cost and Usage Report. |
+| `any anomalies?` | Runs the 30-day spike and step-change scan. |
+| `is Intelligent-Tiering working?` | Shows how much data sits in each S3 tier. |
+
+### Safety
+
+- Every AWS call is a get, describe or list. A self-test fails the build if any other call appears in the code.
+- Cost Explorer charges $0.01 per API call. A full run makes 10 to 20 calls. Every other call is free.
+- The skill asks before scanning more than one day of any access log, because CloudWatch Logs reads are billed per GB.
 
 ## Permissions
 
@@ -204,3 +243,20 @@ by hand: projected GB − 1,024 × last month's realised $/billable GB.
 - **Anything slower than ~30 s writes to a log file**, then read the file.
 - Account-specific knowledge (one-offs, known causes, normal day and month, top lines) goes in
   `notes.md`, which is gitignored. This README stays generic.
+
+---
+
+## Suggest a feature or report a bug
+
+- **A check you want, or a trap we missed:** [open a feature request](https://github.com/luffy2095/aws-cost-audit/issues/new?template=feature_request.yml).
+- **Something broke or a number looks wrong:** [report a bug](https://github.com/luffy2095/aws-cost-audit/issues/new?template=bug_report.yml).
+
+Never paste account IDs, ARNs, bucket names or bill amounts into an issue. Replace them with placeholders.
+
+## Contribute
+
+New checks and new traps are the most useful contributions. [CONTRIBUTING.md](CONTRIBUTING.md) explains the read-only rule, how to add a check, and how to test.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).

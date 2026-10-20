@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest a check, a trap, or anything the audit should do
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "Never paste account IDs, ARNs, bucket names or bill amounts. Use placeholders."
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind?
+      options:
+        - A new check
+        - A trap that made a reading wrong
+        - A Cost and Usage Report query
+        - Region or tax support
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Which question should the audit answer?
+      placeholder: e.g. Am I paying for NAT gateways that carry almost no traffic?
+    validations:
+      required: true
+  - type: textarea
+    id: how
+    attributes:
+      label: How would you check it?
+      description: The AWS API calls or report columns you would use, if you know them. Only get, describe and list calls are allowed.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Can you help?
+      options:
+        - label: I can open a pull request for this.

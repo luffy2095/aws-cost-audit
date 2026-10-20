@@ -1,0 +1,30 @@
+name: Bug report
+description: Something broke, or a number looks wrong
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Never paste account IDs, ARNs, bucket names or bill amounts. Replace them with placeholders before you paste a log."
+  - type: input
+    id: section
+    attributes:
+      label: Which section of the audit?
+      placeholder: e.g. 4b anomalies, cur_query.py top
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Log output, with account details removed
+      render: text
+  - type: input
+    id: env
+    attributes:
+      label: OS, Python version, AWS CLI version
+      placeholder: e.g. macOS 15, Python 3.12, aws-cli/2.17
