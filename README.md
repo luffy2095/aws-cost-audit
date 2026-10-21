@@ -1,5 +1,7 @@
 # AWS cost audit
 
+[![test](https://github.com/luffy2095/aws-cost-audit/actions/workflows/test.yml/badge.svg)](https://github.com/luffy2095/aws-cost-audit/actions/workflows/test.yml)
+
 A Claude Code skill that answers "why did my AWS bill move?" the way a careful cloud-cost analyst would. It reads your bill read-only and never changes anything in your account.
 
 It is for engineers and founders who pay an AWS bill and want a straight answer without learning Cost Explorer's traps.
