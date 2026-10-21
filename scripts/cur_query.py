@@ -25,7 +25,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 def config():
     path = os.path.join(HERE, "..", "config.json")
-    cfg = json.load(open(path)) if os.path.exists(path) else {}
+    cfg = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}
     if not cfg.get("cur_s3_path"):
         sys.exit("config.json has no cur_s3_path. Set up a CUR 2.0 data export with resource IDs first "
                  "(README section 2), then put its s3://bucket/prefix/data path in config.json.")

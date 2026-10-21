@@ -38,7 +38,7 @@ def load_config():
     cfg = dict(DEFAULTS)
     path = os.path.join(HERE, "..", "config.json")
     if os.path.exists(path):
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             cfg.update(json.load(f))
     return cfg
 
@@ -56,7 +56,7 @@ def aws(*args):
         cmd += ["--profile", CFG["profile"]]
     if CFG["region"]:
         cmd += ["--region", CFG["region"]]
-    r = subprocess.run(cmd, capture_output=True, text=True)
+    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if r.returncode:
         err = r.stderr.strip().splitlines()[-1] if r.stderr.strip() else "error"
         print(f"  aws {args[0]} {args[1]}: {err[:200]}", flush=True)
@@ -452,7 +452,7 @@ def selftest():
     assert not settled_by_time(d(2026, 10, 19), noon - dt.timedelta(minutes=1))
     assert not settled_by_time(d(2026, 10, 20), noon)
     # read-only guard: every AWS operation this file calls must be a get/describe/list
-    ops = set(re.findall(r'aws\("([a-z0-9]+)", "([a-z-]+)"', open(__file__).read()))
+    ops = set(re.findall(r'aws\("([a-z0-9]+)", "([a-z-]+)"', open(__file__, encoding="utf-8").read()))
     bad = [f"{s} {o}" for s, o in ops if not o.startswith(("get-", "describe-", "list-"))]
     assert not bad, f"non read-only AWS calls: {bad}"
     print(f"selftest ok ({len(ops)} AWS operations, all read-only)")
